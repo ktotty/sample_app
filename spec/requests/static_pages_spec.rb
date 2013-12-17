@@ -26,6 +26,15 @@ describe "Static Pages" do
         visit root_path
       end
 
+      describe "pagination" do
+
+        it "should paginate the feed" do
+          30.times { FactoryGirl.create(:micropost, user: user, content: 'Lorem ipsum') } 
+          visit root_path
+          page.should have_selector('div.pagination')
+        end
+      end
+
       it "should render the user's feed" do
         user.feed.each do |item|
           expect(page).to have_selector("li##{item.id}", text: item.content)
