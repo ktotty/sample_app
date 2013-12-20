@@ -42,5 +42,10 @@ describe "Micropost pages" do
 				expect { click_link "delete" }.to change(Micropost, :count).by(-1)
 			end
 		end
+
+		describe "as user visiting another user's page" do
+			before { visit users_path }
+			it { should_not have_link('delete', href: users_path) }
+		end
 	end
 end
