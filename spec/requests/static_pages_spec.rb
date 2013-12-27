@@ -26,6 +26,15 @@ describe "Static Pages" do
         visit root_path
       end
 
+      describe "sidebar micropost counts" do
+        before { visit root_path }
+
+        it "should have micropost count" do
+          expect { current_user.microposts.count }
+          expect { pluralize(current_user.microposts.count, "micropost") }
+        end
+      end
+
       describe "pagination" do
 
         it "should paginate the feed" do
