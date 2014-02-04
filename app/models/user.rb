@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
 	has_many :followers, through: :reverse_relationships, source: :follower
 	before_save  { self.email = email.downcase }
 	before_create :create_remember_token
+	after_create :send_confirmation
 
 	# another way to write the command above => before_save { email.downcase! }
 	validates :name, presence: true, length: { maximum: 50 }
@@ -37,6 +38,19 @@ class User < ActiveRecord::Base
 
 	def unfollow!(other_user)
 		relationships.find_by(followed_id: other_user.id).destroy!
+	end
+
+	def send_password_reset
+		self.password_reset_token = User.new_remember_token
+		self.password_reset_sent_at = Time.zone.now
+		save(:validate => false)
+		UserMailer.password_reset(self).deliver
+	end
+
+	def send_confirmation
+		self.confirmation_code = SecureRandom.urlsafe_base64
+		self.save(:validate => false)
+		UserMailer.confirm_email(self).deliver
 	end
 
 	private
